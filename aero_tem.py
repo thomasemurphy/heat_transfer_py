@@ -75,19 +75,19 @@ if __name__ == "__main__":
 
 	Tout = []
 
-	for i in range (10):
-	    Told=T
+	for i in range (100):
+	    Told = T
 	    for ty in range(1,Yvec.size-1):
 
 	        for tx in range(1,Xvec.size-1):
 
 	            du = (
 	            	dt * (
-	            		alpha * (
-	            			Told[tx+1,ty] - 2*Told[tx,ty] + Told[tx-1,ty]
-	            			) / dx**2 + alpha * (Told[tx,ty+1] - 2*Told[tx,ty] + Told[tx,ty-1]) / dy**2
-	            		) + Told[tx,ty]) - T[tx,ty]
-	            #print(du)
+	            		alpha * (Told[tx+1,ty] - 2*Told[tx,ty] + Told[tx-1,ty]) / dx**2 +
+	            		alpha * (Told[tx,ty+1] - 2*Told[tx,ty] + Told[tx,ty-1]) / dy**2
+	            		) +
+	            	Told[tx,ty]
+	            	) - T[tx,ty]
 
 	            T[tx,ty] = T[tx,ty] + du
 
