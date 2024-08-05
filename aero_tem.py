@@ -4,6 +4,8 @@ from matplotlib import cm #import color for surface plot
 import os, sys
 import matplotlib.animation as ani #importing animation library
 
+# from https://www.aeroodyssey.org/3d-heat-equation
+
 alpha=97 # (mm^2/s) thermal diffusivity, alluminum
 #length of sides  of heated square plate
 Lx=152 #(mm)
