@@ -1,42 +1,19 @@
 import numpy as np
-import matplotlib.pyplot as plot #import plotting library
+import matplotlib.pyplot as plt #import plotting library
 from matplotlib import cm #import color for surface plot
 import os, sys
 import matplotlib.animation as ani #importing animation library
 
 # from https://www.aeroodyssey.org/3d-heat-equation
 
-# def frame(frame_number,Tout,plot):
-#     plot[0].remove()
-#     plot[0]=ax1.plot_surface(X,Y,Tout[frame_number,:,:],cmap=cm.jet)
-
-# fig = plot.figure()
-# ax1 = plot.axes(projection="3d")
-# ax1.set_xlabel('x axis (mm)')
-# ax1.set_ylabel('y axis (mm)')
-# ax1.set_zlabel('Temperature (C)')
-# ax1.set_xlim(0,Lx)
-# ax1.set_ylim(0,Ly)
-# ax1.set_zlim(0,200)
-# x = np.linspace(0, Lx, N)
-# y = np.linspace(0, Ly, N)
-# X, Y = np.meshgrid(x, y)
-# plot1=[ax1.plot_surface(X,Y,Tout[0,:,:])]
-
-
-# #plot=[ax1.plot_surface(X,Y,Tout[:,:,0])]
-# animation=ani.FuncAnimation(fig,frame,frn,fargs=(Tout,plot1),interval=60,blit=False)
-# #plot.show()
-
-# #save video
-# #path for ffmpeg using imagemagick
-# ff_path = os.path.join('C:/', 'ImageMagick-7.0.10-Q16', 'ffmpeg.exe')
-# plot.rcParams['animation.ffmpeg_path'] = ff_path
-# #path if i want to convert the .mp4 to a gif
-# #imgk_path = os.path.join('C:/', 'ImageMagick-7.0.10-Q16', 'convert.exe')
-# #plot.rcParams['animation.convert_path'] = imgk_path
-# FFwriter=ani.FFMpegWriter(fps=220) #declar my writer and frame rate
-# animation.save(os.path.join('C:/','Users','Michael','Desktop','video','tesst.mp4'),writer=FFwriter) #saving function
+def frame(frame_number,Tout,plot):
+    plot[0].remove()
+    plot[0] = ax1.plot_surface(
+    	X,
+    	Y,
+    	Tout[frame_number,:,:],
+    	cmap=cm.jet
+    	)
 
 if __name__ == "__main__":
 	
@@ -57,8 +34,7 @@ if __name__ == "__main__":
 	
 	#Discretize time
 	#dt=0.5*(dx**2)/(2*alpha) #dt needed for stability can do larger however good rule of thumb
-	dt=0.01
-	print(dt)
+	dt=0.025
 	time=15 #sec, how long i want to run the simulations for
 	tvec=np.linspace(0,1,100) #this is how long i run my numerical approximation. 0 to 100 sec
 	
@@ -71,16 +47,16 @@ if __name__ == "__main__":
 	T[0,:] = 200.0 #200 degrees C applied to top of plate
 	T[:,-1] = 200.0 #200 degrees C applied to right side of plate
 
-	print(T.shape)
+	n_steps = 200
 
-	Tout = []
+	Tout = np.empty(
+		shape = (n_steps, Yvec.size, Xvec.size)
+		)
 
-	for i in range (100):
+	for i in range (n_steps):
 	    Told = T
 	    for ty in range(1,Yvec.size-1):
-
 	        for tx in range(1,Xvec.size-1):
-
 	            du = (
 	            	dt * (
 	            		alpha * (Told[tx+1,ty] - 2*Told[tx,ty] + Told[tx-1,ty]) / dx**2 +
@@ -88,13 +64,31 @@ if __name__ == "__main__":
 	            		) +
 	            	Told[tx,ty]
 	            	) - T[tx,ty]
-
 	            T[tx,ty] = T[tx,ty] + du
+	    Tout[i] = T
 
-	    #img.append((plot.contour(X,Y,T,30)))
-	    Tout.append(T)
+	fig = plt.figure()
+	ax1 = plt.axes(projection="3d")
+	ax1.set_xlabel('x axis (mm)')
+	ax1.set_ylabel('y axis (mm)')
+	ax1.set_zlabel('Temperature (C)')
+	ax1.set_xlim(0,Lx)
+	ax1.set_ylim(0,Ly)
+	ax1.set_zlim(0,200)
+	X, Y = np.meshgrid(Xvec, Yvec)
+	plot1=[ax1.plot_surface(X, Y, Tout[0,:,:])]
 
-	print(Tout)
-	print()
-	print(len(Tout))
-	print(Tout[9])
+	animation = ani.FuncAnimation(
+		fig = fig,
+		func = frame,
+		frames = n_steps,
+		fargs = (Tout,plot1),
+		interval = 60,
+		blit = False
+		)
+	# plt.show()
+
+	# save to file
+	animation.save(filename = 'test.gif', writer = 'pillow')
+
+
