@@ -144,6 +144,6 @@ if __name__ == "__main__":
 
 	print('saved animation')
 
-	print('dummy3')
+	print('dummy4')
 
 
