@@ -87,8 +87,8 @@ if __name__ == "__main__":
 	#Discretize space
 	Xvec = np.linspace(0, Lx, N)
 	Yvec = np.linspace(0, Ly, N)
-	dx = Xvec[2] - Xvec[1] #since equally spaced, i set a constant dx
-	dy = Yvec[2] - Yvec[1] #since equally spaced, I set a constant dy
+	dx = Xvec[2] - Xvec[1]
+	dy = Yvec[2] - Yvec[1]
 	
 	#Discretize time
 	dt = calculate_dt(dx, alpha)
