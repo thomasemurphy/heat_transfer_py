@@ -38,8 +38,8 @@ def step_thru_time(n_time_steps, dt, Xvec, Yvec, alpha, T_start):
 
 	return Tout
 
-# im not ready yet
-# def save_animation(Lx, Ly, Xvec, Yvec, Tout, n_time_steps):
+# # im not ready yet
+# def make_animation(Lx, Ly, Xvec, Yvec, Tout, n_time_steps):
 # 	fig = plt.figure()
 # 	ax1 = plt.axes(projection="3d")
 # 	ax1.set_xlabel('x axis (mm)')
@@ -61,8 +61,10 @@ def step_thru_time(n_time_steps, dt, Xvec, Yvec, alpha, T_start):
 # 		)
 # 	# plt.show()
 
+# 	return animation
+
 # 	# save to file
-# 	animation.save(filename = 'test.gif', writer = 'pillow')
+# 	# animation.save(filename = 'test.gif', writer = 'pillow')
 
 
 if __name__ == "__main__":
@@ -100,17 +102,16 @@ if __name__ == "__main__":
 
 	Tout = step_thru_time(n_time_steps, dt, Xvec, Yvec, alpha, T)
 
-	print(Tout)
-	print(Tout.shape)
+	print('made Tout')
 
 	fig = plt.figure()
 	ax1 = plt.axes(projection="3d")
 	ax1.set_xlabel('x axis (mm)')
 	ax1.set_ylabel('y axis (mm)')
 	ax1.set_zlabel('Temperature (C)')
-	ax1.set_xlim(0,Lx)
-	ax1.set_ylim(0,Ly)
-	ax1.set_zlim(0,200)
+	ax1.set_xlim(0, Lx)
+	ax1.set_ylim(0, Ly)
+	ax1.set_zlim(0, 200)
 	X, Y = np.meshgrid(Xvec, Yvec)
 	plot1=[ax1.plot_surface(X, Y, Tout[0,:,:])]
 
@@ -118,15 +119,19 @@ if __name__ == "__main__":
 		fig = fig,
 		func = frame,
 		frames = n_time_steps,
-		fargs = (Tout,plot1),
+		fargs = (Tout, plot1),
 		interval = 60,
 		blit = False
 		)
 	# plt.show()
 
+	# animation = make_animation(Lx, Ly, Xvec, Yvec, Tout, n_time_steps)
+
+	print('made animation')
+
 	# save to file
 	animation.save(filename = 'test.gif', writer = 'pillow')
 
-	# save_animation(Lx, Ly, Xvec, Yvec, Tout, n_time_steps)
+	print('saved animation')
 
 
