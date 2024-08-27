@@ -55,19 +55,14 @@ def step_thru_time_radial(n_time_steps, dt, r_vec, theta_vec, alpha, T):
 	    Told = T
 	    for ir in range(1, r_vec.size-1):
 	        for itheta in range(1, theta_vec.size-1):
-	        	dTdr = 1 #start here
-	        	dTdr = (Told[ir+1, ty] - 2*Told[ir, itheta] + Told[ir-1, itheta]) / dr**2
-	        	dTdtheta = 0
-	        	q_flux_r = k
-
 	            T[ir, itheta] = (
-	            	dt * (
-	            		alpha * (Told[tx+1,ty] - 2*Told[tx,ty] + Told[tx-1,ty]) / dx**2 +
-	            		alpha * (Told[tx,ty+1] - 2*Told[tx,ty] + Told[tx,ty-1]) / dy**2
-	            		) +
-	            	Told[tx,ty]
+	            	Told[ir, itheta] +
+	            	dt * alpha * (
+	            		(Told[ir+1, itheta] - 2*Told[ir, itheta] + Told[ir-1, itheta]) / dr**2 +
+	            		(1 / r_vec[ir]) * (Told[ir+1, itheta] - Told[ir-1, itheta]) / (2 * dr)
+	            		)
 	            	)
-	    Tout[i] = T
+	            Tout[i] = T
 	return Tout
 
 
@@ -82,11 +77,11 @@ if __name__ == "__main__":
 	R_circle_outer = D_circle_mm / 2
 
 	#number of radial nodes
-	n_inc_r = 20
+	n_inc_r = 36
 	r_min = 0.1
 
 	# number of around-circle nodes
-	n_inc_theta = 12
+	n_inc_theta = 36
 
 	# discretize circular space
 	r_vec = np.linspace(r_min, R_circle_outer, n_inc_r)
@@ -97,7 +92,7 @@ if __name__ == "__main__":
 	
 	#Discretize time
 	dt = calculate_dt(dr, alpha)
-	print(dr)
+	print(dt)
 	t_end = 600
 	n_time_steps = int(t_end / dt)
 
@@ -110,42 +105,59 @@ if __name__ == "__main__":
 
 	# boundary condition on edge of circle
 	T_boundary = 80 #C
-	T[-1,:] = T_boundary
+	T[:,-1] = T_boundary
+
+	print(T)
 
 	Tout = step_thru_time_radial(n_time_steps, dt, r_vec, theta_vec, alpha, T)
 
 	print('made Tout')
 
-	# add time text in animation
+	# print(Tout)
+
+	
+	# plot
 
 	fig = plt.figure()
-	ax1 = plt.axes(projection="3d")
-	ax1.set_xlabel('x axis (mm)')
-	ax1.set_ylabel('y axis (mm)')
-	ax1.set_zlabel('Temperature (C)')
-	ax1.set_xlim(0, Lx)
-	ax1.set_ylim(0, Ly)
-	ax1.set_zlim(0, 100)
-	X, Y = np.meshgrid(Xvec, Yvec)
-	plot1=[ax1.plot_surface(X, Y, Tout[0,:,:])]
+	ax = fig.add_subplot(projection='3d')
+	
+	# Create the mesh in polar coordinates and compute corresponding Z.
+	r_mesh, theta_mesh = np.meshgrid(r_vec, theta_vec)
 
-	animation = ani.FuncAnimation(
-		fig = fig,
-		func = frame,
-		frames = n_time_steps,
-		fargs = (Tout, plot1),
-		interval = 400,
-		blit = False
-		)
+	# Express the mesh in the cartesian system.
+	X_plot, Y_plot = r_mesh * np.cos(theta_mesh), r_mesh * np.sin(theta_mesh)
+
+	# Plot the surface.
+	ax.plot_surface(X_plot, Y_plot, Tout[200, :, :], cmap=plt.cm.YlGnBu_r)
+	
+	plt.show()
+
+	# fig = plt.figure()
+	# ax1 = plt.axes(projection = "3d")
+	# ax1.set_xlabel('x axis (mm)')
+	# ax1.set_ylabel('y axis (mm)')
+	# ax1.set_zlabel('Temperature (C)')
+	# ax1.set_xlim(0, Lx)
+	# ax1.set_ylim(0, Ly)
+	# ax1.set_zlim(0, 100)
+	# X, Y = np.meshgrid(Xvec, Yvec)
+	# plot1=[ax1.plot_surface(X, Y, Tout[0,:,:])]
+
+	# animation = ani.FuncAnimation(
+	# 	fig = fig,
+	# 	func = frame,
+	# 	frames = n_time_steps,
+	# 	fargs = (Tout, plot1),
+	# 	interval = 400,
+	# 	blit = False
+	# 	)
 	# plt.show()
 
-	# animation = make_animation(Lx, Ly, Xvec, Yvec, Tout, n_time_steps)
-
-	print('made animation')
+	# print('made animation')
 
 	# save to file
-	animation.save(filename = 'square_milk_bottle_draft.gif', writer = 'pillow')
+	# animation.save(filename = 'square_milk_bottle_draft.gif', writer = 'pillow')
 
-	print('saved animation')
+	# print('saved animation')
 
 
