@@ -43,8 +43,9 @@ def step_thru_time(n_time_steps, dt, Xvec, Yvec, alpha, T_start):
 
 	return Tout
 
-def step_thru_time_radial(n_time_steps, dt, r_vec, theta_vec, alpha, T):
+def step_thru_time_radial_1d(n_time_steps, dt, r_vec, alpha, T):
 
+	dr = r_vec[1] - r_vec[0]
 	# initialize results array
 	Tout = np.empty(
 		shape = (n_time_steps, r_vec.size, theta_vec.size)
@@ -52,17 +53,17 @@ def step_thru_time_radial(n_time_steps, dt, r_vec, theta_vec, alpha, T):
 
 	# for each time, for each r, for each theta: update temperature
 	for i in range (n_time_steps):
-	    Told = T
-	    for ir in range(1, r_vec.size-1):
-	        for itheta in range(1, theta_vec.size-1):
-	            T[ir, itheta] = (
-	            	Told[ir, itheta] +
-	            	dt * alpha * (
-	            		(Told[ir+1, itheta] - 2*Told[ir, itheta] + Told[ir-1, itheta]) / dr**2 +
-	            		(1 / r_vec[ir]) * (Told[ir+1, itheta] - Told[ir-1, itheta]) / (2 * dr)
-	            		)
-	            	)
-	            Tout[i] = T
+		Told = T
+		for ir in range(1, r_vec.size-1):
+			T[ir, 0] = (
+				Told[ir, 0] +
+				dt * alpha * (
+					(Told[ir+1, 0] - 2 * Told[ir, 0] + Told[ir-1, 0]) / (dr**2) +
+					(1 / r_vec[ir]) * (Told[ir+1, 0] - Told[ir-1, 0]) / (2 * dr)
+					)
+				)
+		Tout[i] = T
+		print(T)
 	return Tout
 
 
@@ -77,18 +78,28 @@ if __name__ == "__main__":
 	R_circle_outer = D_circle_mm / 2
 
 	#number of radial nodes
-	n_inc_r = 36
-	r_min = 0.1
+	n_inc_r = 10
+	r_min = 0.1e-3
 
 	# number of around-circle nodes
-	n_inc_theta = 36
+	n_inc_theta = 12
 
 	# discretize circular space
 	r_vec = np.linspace(r_min, R_circle_outer, n_inc_r)
 	theta_vec = np.linspace(0, 2 * pi, n_inc_theta)
+	theta_vec = np.array([0])
 	dr = r_vec[2] - r_vec[1]
-	dtheta = theta_vec[2] - theta_vec[1]
+	# dtheta = theta_vec[2] - theta_vec[1]
+	dtheta = 0
 	r_max = r_vec[-1]
+
+	print('r vec:')
+	print(r_vec)
+	print()
+	print()
+
+	print('theta_vec')
+	print(theta_vec)
 	
 	#Discretize time
 	dt = calculate_dt(dr, alpha)
@@ -105,32 +116,33 @@ if __name__ == "__main__":
 
 	# boundary condition on edge of circle
 	T_boundary = 80 #C
-	T[:,-1] = T_boundary
+	T[-1,:] = T_boundary
 
 	print(T)
+	print(T.shape)
 
-	Tout = step_thru_time_radial(n_time_steps, dt, r_vec, theta_vec, alpha, T)
+	Tout = step_thru_time_radial_1d(n_time_steps, dt, r_vec, alpha, T)
 
-	print('made Tout')
+	# print('made Tout')
 
 	# print(Tout)
 
 	
 	# plot
 
-	fig = plt.figure()
-	ax = fig.add_subplot(projection='3d')
+	# fig = plt.figure()
+	# ax = fig.add_subplot(projection='3d')
 	
-	# Create the mesh in polar coordinates and compute corresponding Z.
-	r_mesh, theta_mesh = np.meshgrid(r_vec, theta_vec)
+	# # Create the mesh in polar coordinates and compute corresponding Z.
+	# r_mesh, theta_mesh = np.meshgrid(r_vec, theta_vec)
 
-	# Express the mesh in the cartesian system.
-	X_plot, Y_plot = r_mesh * np.cos(theta_mesh), r_mesh * np.sin(theta_mesh)
+	# # Express the mesh in the cartesian system.
+	# X_plot, Y_plot = r_mesh * np.cos(theta_mesh), r_mesh * np.sin(theta_mesh)
 
-	# Plot the surface.
-	ax.plot_surface(X_plot, Y_plot, Tout[200, :, :], cmap=plt.cm.YlGnBu_r)
+	# # Plot the surface.
+	# ax.plot_surface(X_plot, Y_plot, Tout[200, :, :], cmap=plt.cm.YlGnBu_r)
 	
-	plt.show()
+	# plt.show()
 
 	# fig = plt.figure()
 	# ax1 = plt.axes(projection = "3d")
