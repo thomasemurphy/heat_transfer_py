@@ -11,12 +11,12 @@ def calculate_dt(dx, alpha):
 	dt = 0.5 * dx**2 / (2*alpha) #dt needed for stability can do larger however good rule of thumb
 	return dt
 
-def frame(frame_number,Tout,plot):
+def frame(frame_number, Tout, X, Y, plot):
     plot[0].remove()
     plot[0] = ax1.plot_surface(
     	X,
     	Y,
-    	Tout[frame_number,:,:],
+    	Tout[frame_number,:,:].T,
     	cmap=cm.jet
     	)
 
@@ -86,66 +86,58 @@ if __name__ == "__main__":
 	Tout = step_thru_time_radial_1d(n_time_steps, dt, r_vec, alpha, T)
 
 	print('made Tout')
-
-	print(Tout[-1])
-
 	
 	# plot
 
 	# number of around-circle nodes
-	n_inc_theta = 12
+	n_inc_theta = 24
 	# reset theta_vec
 	theta_vec = np.linspace(0, 2 * pi, n_inc_theta)
 
 	T_full = np.empty((n_time_steps, r_vec.size, theta_vec.size))
-	print(T_full.shape)
-	print(Tout.shape)
+
+	# would like to make this faster
 	for i in range(n_time_steps):
-		# print(Tout[i, :, 0])
-		T_full[i] = np.repeat(Tout[i][0], len(theta_vec))
+		for it in range(len(theta_vec)):
+			T_full[i, :, it] = Tout[i, :, 0]
 
-	print(T_full[-1][:][:])
-
-	# Create the mesh in polar coordinates and compute corresponding Z.
-	r_mesh, theta_mesh = np.meshgrid(r_vec, theta_vec)
-
-	fig = plt.figure()
-	ax = fig.add_subplot(projection = '3d')
-
-	# Express the mesh in the cartesian system.
-	X_plot, Y_plot = r_mesh * np.cos(theta_mesh), r_mesh * np.sin(theta_mesh)
-
-	# Plot the surface.
-	ax.plot_surface(X_plot, Y_plot, T_full[int(n_time_steps / 2), :, :], cmap=plt.cm.YlGnBu_r)
-	
-	plt.show()
-
+	# # Create the mesh in polar coordinates and compute corresponding Z.
+	# r_mesh, theta_mesh = np.meshgrid(r_vec, theta_vec)
 	# fig = plt.figure()
-	# ax1 = plt.axes(projection = "3d")
-	# ax1.set_xlabel('x axis (mm)')
-	# ax1.set_ylabel('y axis (mm)')
-	# ax1.set_zlabel('Temperature (C)')
-	# ax1.set_xlim(0, Lx)
-	# ax1.set_ylim(0, Ly)
-	# ax1.set_zlim(0, 100)
-	# X, Y = np.meshgrid(Xvec, Yvec)
-	# plot1=[ax1.plot_surface(X, Y, Tout[0,:,:])]
-
-	# animation = ani.FuncAnimation(
-	# 	fig = fig,
-	# 	func = frame,
-	# 	frames = n_time_steps,
-	# 	fargs = (Tout, plot1),
-	# 	interval = 400,
-	# 	blit = False
-	# 	)
+	# ax = fig.add_subplot(projection = '3d')
+	# # Express the mesh in the cartesian system.
+	# X_plot, Y_plot = r_mesh * np.cos(theta_mesh), r_mesh * np.sin(theta_mesh)
+	# # Plot the surface.
+	# ax.plot_surface(X_plot, Y_plot, T_full[20].T, cmap=plt.cm.YlGnBu_r)
 	# plt.show()
 
-	# print('made animation')
+	fig = plt.figure()
+	ax1 = plt.axes(projection = "3d")
+	ax1.set_xlabel('x axis (mm)')
+	ax1.set_ylabel('y axis (mm)')
+	ax1.set_zlabel('Temperature (C)')
+	ax1.set_xlim(-r_max, r_max)
+	ax1.set_ylim(-r_max, r_max)
+	ax1.set_zlim(0, 100)
+	r_mesh, theta_mesh = np.meshgrid(r_vec, theta_vec)
+	X_plot, Y_plot = r_mesh * np.cos(theta_mesh), r_mesh * np.sin(theta_mesh)
+	plot1=[ax1.plot_surface(X_plot, Y_plot, Tout[0,:,:].T)]
+
+	animation = ani.FuncAnimation(
+		fig = fig,
+		func = frame,
+		frames = n_time_steps,
+		fargs = (Tout, X_plot, Y_plot, plot1),
+		interval = 20,
+		blit = False
+		)
+	# plt.show()
+
+	print('made animation')
 
 	# save to file
-	# animation.save(filename = 'square_milk_bottle_draft.gif', writer = 'pillow')
+	animation.save(filename = 'cylinder_milk_bottle_draft.gif', writer = 'pillow')
 
-	# print('saved animation')
+	print('saved animation')
 
 
