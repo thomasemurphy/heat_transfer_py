@@ -42,7 +42,6 @@ def step_thru_time_radial_1d(n_time_steps, dt, r_vec, alpha, T):
 		# does this work? fudgy...
 		T[0,0] = T[1,0] - (T[2,0] - T[1,0])
 		Tout[i] = T
-		print(T)
 	return Tout
 
 
@@ -60,30 +59,17 @@ if __name__ == "__main__":
 	n_inc_r = 20
 	r_min = 0
 
-	# number of around-circle nodes
-	n_inc_theta = 12
-
 	# discretize circular space
 	r_vec = np.linspace(r_min, R_circle_outer, n_inc_r)
-	theta_vec = np.linspace(0, 2 * pi, n_inc_theta)
 	theta_vec = np.array([0])
 	dr = r_vec[2] - r_vec[1]
 	# dtheta = theta_vec[2] - theta_vec[1]
 	dtheta = 0
 	r_max = r_vec[-1]
-
-	print('r vec:')
-	print(r_vec)
-	print()
-	print()
-
-	print('theta_vec')
-	print(theta_vec)
 	
 	#Discretize time
 	dt = calculate_dt(dr, alpha)
-	print(dt)
-	t_end = 3000
+	t_end = 600
 	n_time_steps = int(t_end / dt)
 
 	# inital conditions
@@ -97,34 +83,42 @@ if __name__ == "__main__":
 	T_boundary = 80 #C
 	T[-1,:] = float(T_boundary)
 
-	print(T)
-	print(T.shape)
-
 	Tout = step_thru_time_radial_1d(n_time_steps, dt, r_vec, alpha, T)
 
-	print(dt)
-	print(dr)
+	print('made Tout')
 
-	# print('made Tout')
-
-	# print(Tout)
+	print(Tout[-1])
 
 	
 	# plot
 
-	# fig = plt.figure()
-	# ax = fig.add_subplot(projection='3d')
-	
-	# # Create the mesh in polar coordinates and compute corresponding Z.
-	# r_mesh, theta_mesh = np.meshgrid(r_vec, theta_vec)
+	# number of around-circle nodes
+	n_inc_theta = 12
+	# reset theta_vec
+	theta_vec = np.linspace(0, 2 * pi, n_inc_theta)
 
-	# # Express the mesh in the cartesian system.
-	# X_plot, Y_plot = r_mesh * np.cos(theta_mesh), r_mesh * np.sin(theta_mesh)
+	T_full = np.empty((n_time_steps, r_vec.size, theta_vec.size))
+	print(T_full.shape)
+	print(Tout.shape)
+	for i in range(n_time_steps):
+		# print(Tout[i, :, 0])
+		T_full[i] = np.repeat(Tout[i][0], len(theta_vec))
 
-	# # Plot the surface.
-	# ax.plot_surface(X_plot, Y_plot, Tout[200, :, :], cmap=plt.cm.YlGnBu_r)
+	print(T_full[-1][:][:])
+
+	# Create the mesh in polar coordinates and compute corresponding Z.
+	r_mesh, theta_mesh = np.meshgrid(r_vec, theta_vec)
+
+	fig = plt.figure()
+	ax = fig.add_subplot(projection = '3d')
+
+	# Express the mesh in the cartesian system.
+	X_plot, Y_plot = r_mesh * np.cos(theta_mesh), r_mesh * np.sin(theta_mesh)
+
+	# Plot the surface.
+	ax.plot_surface(X_plot, Y_plot, T_full[int(n_time_steps / 2), :, :], cmap=plt.cm.YlGnBu_r)
 	
-	# plt.show()
+	plt.show()
 
 	# fig = plt.figure()
 	# ax1 = plt.axes(projection = "3d")
