@@ -12,7 +12,7 @@ def step_thru_time_radial_1d(n_time_steps, dt, r_vec, alpha, T):
 	dr = r_vec[1] - r_vec[0]
 	# initialize results array
 	Tout = np.empty(
-		shape = (n_time_steps, r_vec.size, theta_vec.size)
+		shape = (n_time_steps, r_vec.size, 1)
 		)
 
 	# for each time, for each r, for each theta: update temperature

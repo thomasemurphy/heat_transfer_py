@@ -4,7 +4,9 @@ from matplotlib import cm #import color for surface plot
 import os, sys
 import matplotlib.animation as ani #importing animation library
 import ht_functions as htf
-import plotting_functions as ptt
+import plotting_functions as ptf
+
+# in terminal: python3 src/run_script.py
 
 if __name__ == "__main__":
 	
@@ -47,35 +49,12 @@ if __name__ == "__main__":
 
 	print('made Tout')
 
-	# add time text in animation
-
-	fig = plt.figure()
-	ax1 = plt.axes(projection="3d")
-	ax1.set_xlabel('x axis (mm)')
-	ax1.set_ylabel('y axis (mm)')
-	ax1.set_zlabel('Temperature (C)')
-	ax1.set_xlim(0, Lx)
-	ax1.set_ylim(0, Ly)
-	ax1.set_zlim(0, 100)
-	X, Y = np.meshgrid(Xvec, Yvec)
-	plot1=[ax1.plot_surface(X, Y, Tout[0,:,:])]
-
-	animation = ani.FuncAnimation(
-		fig = fig,
-		func = ptt.frame,
-		frames = n_time_steps,
-		fargs = (Tout, X, Y, plot1, ax1),
-		interval = 400,
-		blit = False
-		)
-	# plt.show()
-
-	# animation = make_animation(Lx, Ly, Xvec, Yvec, Tout, n_time_steps)
+	animation = ptf.make_animation(Xvec, Yvec, Tout, geometry = 'cartesian')
 
 	print('made animation')
 
 	# save to file
-	animation.save(filename = 'square_milk_bottle_draft.gif', writer = 'pillow')
+	animation.save(filename = 'gifs/square_milk_bottle_draft.gif', writer = 'pillow')
 
 	print('saved animation')
 
