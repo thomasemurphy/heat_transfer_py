@@ -15,47 +15,63 @@ if __name__ == "__main__":
 	alpha = 0.143 # water
 	
 	#length of sides of heated square plate (mm)
-	Lx = 100 #
-	Ly = 100 #
+	x_len = 100 #
+	y_len = 100 #
+	z_len = 100
 	
-	#number of points
-	N = 20 #number of x and y points x*y = total number of points
-	
+	#number of points in each dimension
+	n_points = 20
+
 	#Discretize space
-	Xvec = np.linspace(0, Lx, N)
-	Yvec = np.linspace(0, Ly, N)
-	dx = Xvec[2] - Xvec[1]
-	dy = Yvec[2] - Yvec[1]
+	x_vec = np.linspace(0, x_len, n_points)
+	y_vec = np.linspace(0, y_len, n_points)
+	z_vec = np.linspace(0, z_len, n_points)
+	space_vectors = [x_vec, y_vec, z_vec]
+	dx_vec = [x[1] - x[0] for x in space_vectors]
 	
 	#Discretize time
-	dt = htf.calculate_dt(dx, alpha)
+	dt = [htf.calculate_dt(dx, alpha) for dx in dx_vec].min()
 	print(dt)
 	t_end = 600
 	n_time_steps = int(t_end / dt)
 
 	# inital conditions
-	T_init = float(2) # fridge
-	T = np.full((Yvec.size,Xvec.size), T_init) #entire plate is at 20 degrees C
+	T_init = 2 # fridge
+	T_init_full = np.full(
+		[len(x) for x in space_vectors],
+		float(T_init)
+		)
 
 	# boundary conditions
 	# note: need to handle non-temperature boundary conditions
 	T_boundary = float(80) #C
-	T[:,0] = T_boundary # left side of plate
-	T[-1,:] = T_boundary # bottom
-	T[0,:] = T_boundary # top
-	T[:,-1] = T_boundary # right
+	T_init_full[0, :, :] = T_boundary
+	T_init_full[-1, :, :] = T_boundary
+	T_init_full[:, 0, :] = T_boundary
+	T_init_full[:, -1, :] = T_boundary
+	T_init_full[:, :, 0] = T_boundary
+	T_init_full[:, :, -1] = T_boundary
 
-	Tout = htf.step_thru_time_cart_2d(n_time_steps, dt, Xvec, Yvec, alpha, T)
+	T_matrix = htf.step_thru_time_3d(
+		n_time_steps = n_time_steps,
+		dt = dt,
+		T_start = T_init_full,
+		space_vectors = space_vectors,
+		alpha = alpha,
+		geometry = 'cartesian'
+		)
 
 	print('made Tout')
 
-	animation = ptf.make_animation(Xvec, Yvec, Tout, geometry = 'cartesian')
+	print(T_matrix[-1])
 
-	print('made animation')
+	# animation = ptf.make_animation(Xvec, Yvec, Tout, geometry = 'cartesian')
 
-	# save to file
-	animation.save(filename = 'gifs/square_milk_bottle_draft.gif', writer = 'pillow')
+	# print('made animation')
 
-	print('saved animation')
+	# # save to file
+	# animation.save(filename = 'gifs/square_milk_bottle_draft.gif', writer = 'pillow')
+
+	# print('saved animation')
 
 

@@ -62,9 +62,9 @@ def step_thru_time_cart_2d(n_time_steps, dt, Xvec, Yvec, alpha, T_start):
 	return Tout
 
 def calculate_gradients_cartesian(T, ix, iy, iz, dx_vec):
-	grad_x = (T[ix+1, iy, iz] - 2 * T[ix, iy, iz] + T[ix-1, iy, iz]) / dx[0]**2
-	grad_y = (T[ix, iy+1, iz] - 2 * T[ix, iy, iz] + T[ix, iy-1, iz]) / dx[1]**2
-	grad_z = (T[ix, iy, iz+1] - 2 * T[ix, iy, iz] + T[ix, iy, iz-1]) / dx[2]**2
+	grad_x = (T[ix+1, iy, iz] - 2 * T[ix, iy, iz] + T[ix-1, iy, iz]) / dx_vec[0]**2
+	grad_y = (T[ix, iy+1, iz] - 2 * T[ix, iy, iz] + T[ix, iy-1, iz]) / dx_vec[1]**2
+	grad_z = (T[ix, iy, iz+1] - 2 * T[ix, iy, iz] + T[ix, iy, iz-1]) / dx_vec[2]**2
 	sum_grad = grad_x + grad_y + grad_z
 	return sum_grad
 
@@ -93,9 +93,6 @@ def step_thru_time_3d(
 					if geometry == 'cartesian':
 						sum_grad = calculate_gradients_cartesian(T_last, ix, iy, iz, dx)
 						T_current[ix, iy, iz] = T_last [ix, iy, iz] + dt * alpha * sum_grad
+		T_matrix[i_time] = T_current
 
-					T_current[ix, iy, iz] = (
-						T_last[ix, iy, iz] + 
-						dt * alpha
-
-
+	return T_matrix
