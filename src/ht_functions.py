@@ -60,3 +60,21 @@ def step_thru_time_cart_2d(n_time_steps, dt, Xvec, Yvec, alpha, T_start):
 	    Tout[i] = T
 
 	return Tout
+
+def step_thru_time(
+	n_time_steps,
+	dt,
+	T_start,
+	space_vectors,
+	geometry = 'cartesian',
+	):
+	
+	n_dims = len(space_vectors)
+	
+	T_matrix = np.empty(
+		shape = n_time_steps + [len(x) for x in shape_vectors]
+		)
+
+	dx = [x[1] - x[0] for x in space_vectors]
+
+
