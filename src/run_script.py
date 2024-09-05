@@ -20,7 +20,7 @@ if __name__ == "__main__":
 	z_len = 100
 	
 	#number of points in each dimension
-	n_points = 20
+	n_points = 50
 
 	#Discretize space
 	x_vec = np.linspace(0, x_len, n_points)
@@ -28,11 +28,14 @@ if __name__ == "__main__":
 	z_vec = np.linspace(0, z_len, n_points)
 	space_vectors = [x_vec, y_vec, z_vec]
 	dx_vec = [x[1] - x[0] for x in space_vectors]
+
+	print(dx_vec)
 	
 	#Discretize time
-	dt = [htf.calculate_dt(dx, alpha) for dx in dx_vec].min()
+	print([htf.calculate_dt(dx, alpha) for dx in dx_vec])
+	dt = min([htf.calculate_dt(dx, alpha) for dx in dx_vec])
 	print(dt)
-	t_end = 600
+	t_end = 60
 	n_time_steps = int(t_end / dt)
 
 	# inital conditions
@@ -52,6 +55,8 @@ if __name__ == "__main__":
 	T_init_full[:, :, 0] = T_boundary
 	T_init_full[:, :, -1] = T_boundary
 
+	print(T_init_full.shape)
+
 	T_matrix = htf.step_thru_time_3d(
 		n_time_steps = n_time_steps,
 		dt = dt,
@@ -61,9 +66,9 @@ if __name__ == "__main__":
 		geometry = 'cartesian'
 		)
 
-	print('made Tout')
+	print(T_matrix[-1, :, :, 20])
 
-	print(T_matrix[-1])
+	ptf.make_plot_3d(space_vectors, T_matrix[4])
 
 	# animation = ptf.make_animation(Xvec, Yvec, Tout, geometry = 'cartesian')
 

@@ -78,7 +78,7 @@ def step_thru_time_3d(
 	):
 	
 	T_matrix = np.empty(
-		shape = n_time_steps + [len(x) for x in shape_vectors]
+		shape = [n_time_steps] + [len(x) for x in space_vectors]
 		)
 
 	dx = [x[1] - x[0] for x in space_vectors]
@@ -94,5 +94,6 @@ def step_thru_time_3d(
 						sum_grad = calculate_gradients_cartesian(T_last, ix, iy, iz, dx)
 						T_current[ix, iy, iz] = T_last [ix, iy, iz] + dt * alpha * sum_grad
 		T_matrix[i_time] = T_current
+		print(T_matrix.mean())
 
 	return T_matrix
