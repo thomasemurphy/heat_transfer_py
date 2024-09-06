@@ -20,7 +20,7 @@ if __name__ == "__main__":
 	z_len = 100
 	
 	#number of points in each dimension
-	n_points = 50
+	n_points = 40
 
 	#Discretize space
 	x_vec = np.linspace(0, x_len, n_points)
@@ -35,7 +35,7 @@ if __name__ == "__main__":
 	print([htf.calculate_dt(dx, alpha) for dx in dx_vec])
 	dt = min([htf.calculate_dt(dx, alpha) for dx in dx_vec])
 	print(dt)
-	t_end = 60
+	t_end = 600
 	n_time_steps = int(t_end / dt)
 
 	# inital conditions
@@ -55,7 +55,7 @@ if __name__ == "__main__":
 	T_init_full[:, :, 0] = T_boundary
 	T_init_full[:, :, -1] = T_boundary
 
-	print(T_init_full.shape)
+	corners = ptf.centers_to_corners(space_vectors)
 
 	T_matrix = htf.step_thru_time_3d(
 		n_time_steps = n_time_steps,
@@ -65,8 +65,6 @@ if __name__ == "__main__":
 		alpha = alpha,
 		geometry = 'cartesian'
 		)
-
-	print(T_matrix[-1, :, :, 20])
 
 	ptf.make_plot_3d(space_vectors, T_matrix[4])
 

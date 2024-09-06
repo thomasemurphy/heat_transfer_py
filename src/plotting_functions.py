@@ -67,13 +67,20 @@ def midpoints(x):
         sl += np.index_exp[:]
     return x
 
+def centers_to_corners(axes_inc):
+    dx = [x[1] - x[0] for x in axes_inc]
+    corners = [axes_inc[i] - dx[i] / 2 for i in range(3)]
+    for i in range(3):
+        corners[i] = np.append(corners[i], corners[i][-1] + dx[i] / 2)
+    return corners
+
 def make_plot_3d(axes_inc, T_matrix, geometry = 'cartesian'):
 
     # https://matplotlib.org/stable/gallery/mplot3d/voxels_numpy_logo.html
-    
-    x_mesh, y_mesh, z_mesh = np.meshgrid(axes_inc[0], axes_inc[1], axes_inc[2])
 
-    print(x_mesh.shape)
+    corners = centers_to_corners(axes_inc)
+    
+    x_mesh, y_mesh, z_mesh = np.meshgrid(corners[0], corners[1], corners[2])
 
     # x_mesh_c = midpoints(x_mesh)
     # y_mesh_c = midpoints(y_mesh)
@@ -87,33 +94,38 @@ def make_plot_3d(axes_inc, T_matrix, geometry = 'cartesian'):
     ax1.set_zlabel('z (mm)')
 
     if geometry == 'cartesian':
-        ax1.set_xlim(0, max(axes_inc[0]))
-        ax1.set_ylim(0, max(axes_inc[1]))
-        ax1.set_zlim(0, max(axes_inc[2]))
+        ax1.set_xlim(0, max(corners[0]))
+        ax1.set_ylim(0, max(corners[1]))
+        ax1.set_zlim(0, max(corners[2]))
     else:
         ax1.set_xlim(-max(x_vec), max(x_vec))
         ax1.set_ylim(-max(x_vec), max(x_vec))
-        ax1.set_zlim(0, max(axes_inc[2]))
+        ax1.set_zlim(0, max(corners[2]))
 
     # x_mesh, y_mesh = x_mesh * np.cos(y_mesh), x_mesh * np.sin(y_mesh)
 
-    print(T_matrix.shape)
-
-    T_new = T_matrix.resize((49, 49, 49))
+    # print(T_matrix.shape)
 
     # combine the color components
-    colors = np.zeros(tuple([x - 1 for x in T_new.shape]) + (3,))
-    colors[..., 0] = T_new / 100
-    colors[..., 1] = np.zeros(shape = T_new.shape)
-    colors[..., 2] = np.zeros(shape = T_new.shape)
+    colors = np.zeros(T_matrix.shape + (4,))
+    colors[..., 0] = T_matrix / 100
+    colors[..., 1] = np.zeros(shape = T_matrix.shape)
+    colors[..., 2] = 1 - T_matrix / 100
+    colors[..., 3] = 0.3
 
+    print('x mesh shape')
+    print(x_mesh.shape)
+    print('T shape')
+    print(T_matrix.shape)
     print('colors shape:')
     print(colors.shape)
 
-    ax1.voxels(x_mesh, y_mesh, z_mesh, T_new,
+    ax1.voxels(x_mesh, y_mesh, z_mesh, T_matrix,
           facecolors=colors,
           # edgecolors=np.clip(2*colors - 0.5, 0, 1),  # brighter
           linewidth=0
           )
+
+    plt.show()
 
     # plot1=[ax1.plot_surface(x_mesh, y_mesh, Tout[0,:,:].T)]
