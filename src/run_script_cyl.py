@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import pi
 import matplotlib.pyplot as plt #import plotting library
 from matplotlib import cm #import color for surface plot
 import os, sys
@@ -32,11 +33,14 @@ if __name__ == "__main__":
 
 	print(dx_vec)
 	
-	#Discretize time
-	print([htf.calculate_dt(dx, alpha) for dx in dx_vec])
-	dt = min([htf.calculate_dt(dx, alpha) for dx in dx_vec])
-	print(dt)
-	t_end = 600
+	# need a better way to set dt for radial
+	# #Discretize time
+	# print([htf.calculate_dt(dx, alpha) for dx in dx_vec])
+	# dt = min([htf.calculate_dt(dx, alpha) for dx in dx_vec])
+	# print(dt)
+
+	dt = 1
+	t_end = 60
 	n_time_steps = int(t_end / dt)
 
 	# inital conditions
