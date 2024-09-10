@@ -82,10 +82,6 @@ def make_plot_3d(axes_inc, T_matrix, geometry = 'cartesian'):
     
     x_mesh, y_mesh, z_mesh = np.meshgrid(corners[0], corners[1], corners[2])
 
-    # x_mesh_c = midpoints(x_mesh)
-    # y_mesh_c = midpoints(y_mesh)
-    # z_mesh_c = midpoints(z_mesh)
-
     fig = plt.figure()
     ax1 = plt.axes(projection = '3d')
     
@@ -103,8 +99,6 @@ def make_plot_3d(axes_inc, T_matrix, geometry = 'cartesian'):
         ax1.set_zlim(0, max(corners[2]))
 
     # x_mesh, y_mesh = x_mesh * np.cos(y_mesh), x_mesh * np.sin(y_mesh)
-
-    # print(T_matrix.shape)
 
     # combine the color components
     colors = np.zeros(T_matrix.shape + (4,))
