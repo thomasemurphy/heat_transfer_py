@@ -17,6 +17,8 @@ if __name__ == "__main__":
 	
 	# radius (mm)
 	R = 33
+
+	# height (mm)
 	Z = 120
 	
 	#number of points in each dimension
@@ -30,8 +32,6 @@ if __name__ == "__main__":
 	z_vec = np.linspace(0, Z, n_points_z)
 	space_vectors = [r_vec, theta_vec, z_vec]
 	dx_vec = [x[1] - x[0] for x in space_vectors]
-
-	print(dx_vec)
 	
 	# need a better way to set dt for radial
 	# #Discretize time
@@ -40,7 +40,7 @@ if __name__ == "__main__":
 	# print(dt)
 
 	dt = 1
-	t_end = 1200
+	t_end = 60
 	n_time_steps = int(t_end / dt)
 
 	# inital conditions
@@ -62,16 +62,22 @@ if __name__ == "__main__":
 		T_start = T_init_full,
 		space_vectors = space_vectors,
 		alpha = alpha,
+		geometry = 'cylindrical',
+		print_progress = True
+		)
+
+	animation = ptf.make_animation_2d(
+		r_vec,
+		theta_vec,
+		T_matrix[:, :, :, 30],
 		geometry = 'cylindrical'
 		)
 
-	# animation = ptf.make_animation(Xvec, Yvec, Tout, geometry = 'cartesian')
+	print('made animation')
 
-	# print('made animation')
+	# save to file
+	animation.save(filename = 'gifs/test_3d_cyl.gif', writer = 'pillow')
 
-	# # save to file
-	# animation.save(filename = 'gifs/square_milk_bottle_draft.gif', writer = 'pillow')
-
-	# print('saved animation')
+	print('saved animation')
 
 
