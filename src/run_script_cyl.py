@@ -16,13 +16,13 @@ if __name__ == "__main__":
 	alpha = 0.143 # water
 	
 	# radius (mm)
-	R = 50
-	Z = 100
+	R = 33
+	Z = 120
 	
 	#number of points in each dimension
-	n_points_r = 50
+	n_points_r = 33
 	n_points_theta = 12
-	n_points_z = 50
+	n_points_z = 60
 
 	#Discretize space
 	r_vec = np.linspace(0, R, n_points_r)
@@ -40,18 +40,18 @@ if __name__ == "__main__":
 	# print(dt)
 
 	dt = 1
-	t_end = 60
+	t_end = 1200
 	n_time_steps = int(t_end / dt)
 
 	# inital conditions
-	T_init = 2 # fridge
+	T_init = 20
 	T_init_full = np.full(
 		[len(x) for x in space_vectors],
 		float(T_init)
 		)
 
 	# boundary conditions
-	T_boundary = float(80) #C
+	T_boundary = float(0) #C
 	T_init_full[-1, :, :] = T_boundary
 	T_init_full[:, :, 0] = T_boundary
 	T_init_full[:, :, -1] = T_boundary
@@ -64,8 +64,6 @@ if __name__ == "__main__":
 		alpha = alpha,
 		geometry = 'cylindrical'
 		)
-
-	print(T_matrix[20, :, 0, 20])
 
 	# animation = ptf.make_animation(Xvec, Yvec, Tout, geometry = 'cartesian')
 

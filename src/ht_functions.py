@@ -95,6 +95,7 @@ def step_thru_time_3d(
 	space_vectors,
 	alpha,
 	geometry = 'cartesian',
+	print_progress = False
 	):
 	
 	T_matrix = np.empty(
@@ -118,6 +119,12 @@ def step_thru_time_3d(
 						sum_grad = calculate_gradients_cylindrical(T_last, ix, iy, iz, dx, space_vectors)
 						T_current[ix, iy, iz] = T_last [ix, iy, iz] + dt * alpha * sum_grad
 		T_matrix[i_time] = T_current
-		print(T_matrix.mean())
+		
+		if print_progress:
+			if np.mod(i_time, 60) == 0:
+				print('time (minutes):')
+				print(np.round(i_time * dt, 0) / 60)
+				print('mean temp (deg C):')
+				print(np.round(T_current.mean(), 1))
 
 	return T_matrix
