@@ -55,14 +55,15 @@ if __name__ == "__main__":
 	T_init_full[:, :, 0] = T_boundary
 	T_init_full[:, :, -1] = T_boundary
 
-	is_free_boundary_dict = ({
-		'top': False,
-		'bottom': False,
-		'left': False,
-		'right': False,
-		'front': False,
-		'back': False,
-		}
+	is_free_boundary_dict = (
+		{
+			'top': False,
+			'bottom': False,
+			'left': False,
+			'right': False,
+			'front': False,
+			'back': False,
+		})
 
 	corners = ptf.centers_to_corners(space_vectors)
 
