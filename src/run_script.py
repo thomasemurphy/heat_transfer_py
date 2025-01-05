@@ -11,13 +11,13 @@ import plotting_functions as ptf
 if __name__ == "__main__":
 	
 	# set thermal diffusivity, in mm2 / s
-	alpha = 97 # aluminum
+	# alpha = 97 # aluminum
 	alpha = 0.143 # water
 	
-	#length of sides of heated square plate (mm)
-	x_len = 100 #
-	y_len = 100 #
-	z_len = 100
+	# slab dimensions
+	x_len = 100
+	y_len = 100
+	z_len = 10
 	
 	#number of points in each dimension
 	n_points = 40
@@ -54,6 +54,15 @@ if __name__ == "__main__":
 	T_init_full[:, -1, :] = T_boundary
 	T_init_full[:, :, 0] = T_boundary
 	T_init_full[:, :, -1] = T_boundary
+
+	is_free_boundary_dict = ({
+		'top': False,
+		'bottom': False,
+		'left': False,
+		'right': False,
+		'front': False,
+		'back': False,
+		}
 
 	corners = ptf.centers_to_corners(space_vectors)
 

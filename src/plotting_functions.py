@@ -30,7 +30,11 @@ def make_animation_2d(x_vec, y_vec, Tout, geometry = 'cylindrical'):
         ax1.set_xlim(-max(x_vec), max(x_vec))
         ax1.set_ylim(-max(x_vec), max(x_vec))
 
-    plot1=[ax1.contourf(x_mesh, y_mesh, Tout[0,:,:].T)]
+    plot1 = [ax1.contourf(
+        x_mesh,
+        y_mesh,
+        Tout[0,:,:].T
+        )]
 
     animation = ani.FuncAnimation(
         fig = fig,
@@ -42,52 +46,6 @@ def make_animation_2d(x_vec, y_vec, Tout, geometry = 'cylindrical'):
     )
 
     return animation
-
-def make_animation_2d_old(x_vec, y_vec, Tout, geometry = 'cylindrical'):
-	
-    fig = plt.figure()
-    ax1 = plt.axes(projection="3d")
-    ax1.set_xlabel('x (mm)')
-    ax1.set_ylabel('y (mm)')
-    ax1.set_zlabel('Temperature (C)')
-    ax1.set_zlim(0, Tout.max() * 1.2)
-    x_mesh, y_mesh = np.meshgrid(x_vec, y_vec)
-
-    if geometry == 'cartesian':
-        ax1.set_xlim(0, max(x_vec))
-        ax1.set_ylim(0, max(y_vec))
-    else:
-        x_mesh, y_mesh = x_mesh * np.cos(y_mesh), x_mesh * np.sin(y_mesh)
-        ax1.set_xlim(-max(x_vec), max(x_vec))
-        ax1.set_ylim(-max(x_vec), max(x_vec))
-
-    plot1=[ax1.plot_surface(x_mesh, y_mesh, Tout[0,:,:].T)]
-
-    animation = ani.FuncAnimation(
-        fig = fig,
-        func = frame,
-        frames = len(Tout),
-        fargs = (Tout, x_mesh, y_mesh, plot1, ax1),
-        interval = 400,
-        blit = False
-    )
-
-    return animation
-
-# # stuff below doesn't really work
-# def expand_coordinates(indices):
-#     x, y, z = indices
-#     x[1::2, :, :] += 1
-#     y[:, 1::2, :] += 1
-#     z[:, :, 1::2] += 1
-#     return x, y, z
-
-# def midpoints(x):
-#     sl = ()
-#     for _ in range(x.ndim):
-#         x = (x[sl + np.index_exp[:-1]] + x[sl + np.index_exp[1:]]) / 2.0
-#         sl += np.index_exp[:]
-#     return x
 
 # def centers_to_corners(axes_inc):
 #     dx = [x[1] - x[0] for x in axes_inc]
@@ -96,7 +54,7 @@ def make_animation_2d_old(x_vec, y_vec, Tout, geometry = 'cylindrical'):
 #         corners[i] = np.append(corners[i], corners[i][-1] + dx[i] / 2)
 #     return corners
 
-# def make_plot_3d(axes_inc, T_matrix, geometry = 'cartesian'):
+# def make_voxel_plot(axes_inc, T_matrix, geometry = 'cartesian'):
 
 #     # https://matplotlib.org/stable/gallery/mplot3d/voxels_numpy_logo.html
 
