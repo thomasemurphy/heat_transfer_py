@@ -94,6 +94,7 @@ def step_thru_time_3d(
 	T_start,
 	space_vectors,
 	alpha,
+	is_free_boundary_dict,
 	geometry = 'cartesian',
 	print_progress = False
 	):
@@ -118,6 +119,47 @@ def step_thru_time_3d(
 					elif geometry == 'cylindrical':
 						sum_grad = calculate_gradients_cylindrical(T_last, ix, iy, iz, dx, space_vectors)
 						T_current[ix, iy, iz] = T_last [ix, iy, iz] + dt * alpha * sum_grad
+		T_matrix[i_time] = T_current
+		
+		if print_progress:
+			if np.mod(i_time, 60) == 0:
+				print('time (minutes):')
+				print(np.round(i_time * dt, 0) / 60)
+				print('mean temp (deg C):')
+				print(np.round(T_current.mean(), 1))
+
+	return T_matrix
+
+def step_thru_time_xyz(
+	n_time_steps,
+	dt,
+	T_start,
+	space_vectors,
+	alpha,
+	is_free_boundary_dict,
+	print_progress = False
+	):
+	
+	T_matrix = np.empty(
+		shape = [n_time_steps] + [len(x) for x in space_vectors]
+		)
+
+	dx = [x[1] - x[0] for x in space_vectors]
+
+	T_current = T_start
+
+	for i_time in range(n_time_steps):
+		T_last = T_current
+		
+		for iz in range(len(space_vectors[2])):
+			for iy in range(len(space_vectors[1])):
+				for ix in range(len(space_vectors[0])):
+					sum_grad = calculate_gradients_cartesian(T_last, ix, iy, iz, dx)
+					# need 6 checks (x,y,z * max,min)
+					# test interior, then edges, then corners
+					# 15 different cases, will be some bullwork
+					T_current[ix, iy, iz] = T_last [ix, iy, iz] + dt * alpha * sum_grad
+		
 		T_matrix[i_time] = T_current
 		
 		if print_progress:

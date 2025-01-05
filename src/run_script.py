@@ -65,7 +65,7 @@ if __name__ == "__main__":
 			'back': False,
 		})
 
-	corners = ptf.centers_to_corners(space_vectors)
+	# corners = ptf.centers_to_corners(space_vectors)
 
 	T_matrix = htf.step_thru_time_3d(
 		n_time_steps = n_time_steps,
